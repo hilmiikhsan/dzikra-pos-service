@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package tokenvalidation;
+
+option go_package = "./tokenvalidation";
+
+
+service TokenValidation {
+  rpc ValidateToken (TokenRequest) 
+      returns (TokenResponse);
+}
+
+message TokenRequest {
+  string token = 1;
+}
+
+message TokenResponse {
+  string message = 1;  
+  UserData data = 2; 
+}
+
+message UserData {
+  string user_id = 1;
+  string email = 2;
+  string full_name = 3;
+  repeated ApplicationPermission user_roles = 4;
+}
+
+message ApplicationPermission {
+  repeated UserRoleAppPermission application_permissions = 1;
+  string roles = 2;  
+}
+
+message UserRoleAppPermission {
+  string application_id = 1;    
+  string name           = 2;    
+  repeated string permissions = 3;
+}
