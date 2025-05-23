@@ -3,7 +3,9 @@ package route
 import (
 	mmember "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/member/handler/rest"
 	mmemberDiscount "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/member_discount/handler/rest"
+	product "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/product/handler/rest"
 	productCategory "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/product_category/handler/rest"
+	tax "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/tax/handler/rest"
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/pkg/response"
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"
@@ -16,9 +18,11 @@ func SetupRoutes(app *fiber.App) {
 	// publicAPI     = app.Group("/api")
 	)
 
-	mmember.NewmemberHandler().MemberRoute(superadminAPI)
+	mmember.NewMemberHandler().MemberRoute(superadminAPI)
 	mmemberDiscount.NewMemberDiscountHandler().MemberDiscountRoute(superadminAPI)
 	productCategory.NewProductCategoryHandler().ProductCategoryRoute(superadminAPI)
+	product.NewProductHandler().ProductRoute(superadminAPI)
+	tax.NewTaxHandler().TaxRoute(superadminAPI)
 
 	// fallback route
 	app.Use(func(c *fiber.Ctx) error {

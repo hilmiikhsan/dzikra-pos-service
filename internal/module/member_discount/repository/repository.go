@@ -22,10 +22,10 @@ func NewMemberDiscountRepository(db *sqlx.DB) *memberDiscountRepository {
 	}
 }
 
-func (R *memberDiscountRepository) InsertNewMemberDiscount(ctx context.Context, tx *sqlx.Tx, data *entity.MemberDiscount) (*entity.MemberDiscount, error) {
+func (r *memberDiscountRepository) InsertNewMemberDiscount(ctx context.Context, tx *sqlx.Tx, data *entity.MemberDiscount) (*entity.MemberDiscount, error) {
 	var res = new(entity.MemberDiscount)
 
-	err := tx.QueryRowContext(ctx, R.db.Rebind(queryInsertNewMemberDiscount),
+	err := tx.QueryRowContext(ctx, tx.Rebind(queryInsertNewMemberDiscount),
 		data.Discount,
 	).Scan(
 		&res.ID,

@@ -4,19 +4,19 @@ import (
 	externalUser "github.com/Digitalkeun-Creative/be-dzikra-pos-service/external/user"
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/adapter"
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/middleware"
-	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/member/ports"
-	memberRepository "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/member/repository"
-	memberService "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/member/service"
+	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/tax/ports"
+	taxRepository "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/tax/repository"
+	taxService "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/tax/service"
 )
 
-type memberHandler struct {
-	service    ports.MemberService
+type taxHandler struct {
+	service    ports.TaxService
 	middleware middleware.AuthMiddleware
 	validator  adapter.Validator
 }
 
-func NewMemberHandler() *memberHandler {
-	var handler = new(memberHandler)
+func NewTaxHandler() *taxHandler {
+	var handler = new(taxHandler)
 
 	// validator
 	validator := adapter.Adapters.Validator
@@ -28,16 +28,16 @@ func NewMemberHandler() *memberHandler {
 	middlewareHandler := middleware.NewAuthMiddleware(externalAuth)
 
 	// repository
-	memberRepository := memberRepository.NewMemberRepository(adapter.Adapters.DzikraPostgres)
+	taxRepository := taxRepository.NewTaxRepository(adapter.Adapters.DzikraPostgres)
 
-	// member service
-	memberService := memberService.NewMemberService(
+	// tax service
+	taxService := taxService.NewTaxService(
 		adapter.Adapters.DzikraPostgres,
-		memberRepository,
+		taxRepository,
 	)
 
 	// handler
-	handler.service = memberService
+	handler.service = taxService
 	handler.middleware = *middlewareHandler
 	handler.validator = validator
 
