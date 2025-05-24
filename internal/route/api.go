@@ -1,10 +1,12 @@
 package route
 
 import (
+	ingredientStock "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/ingredient_stock/handler/rest"
 	mmember "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/member/handler/rest"
 	mmemberDiscount "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/member_discount/handler/rest"
 	product "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/product/handler/rest"
 	productCategory "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/product_category/handler/rest"
+	recipe "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/recipe/handler/rest"
 	tax "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/tax/handler/rest"
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/pkg/response"
 	"github.com/gofiber/fiber/v2"
@@ -23,6 +25,8 @@ func SetupRoutes(app *fiber.App) {
 	productCategory.NewProductCategoryHandler().ProductCategoryRoute(superadminAPI)
 	product.NewProductHandler().ProductRoute(superadminAPI)
 	tax.NewTaxHandler().TaxRoute(superadminAPI)
+	ingredientStock.NewIngredientStockHandler().IngredientStockRoute(superadminAPI)
+	recipe.NewRecipeHandler().RecipeRoute(superadminAPI)
 
 	// fallback route
 	app.Use(func(c *fiber.Ctx) error {

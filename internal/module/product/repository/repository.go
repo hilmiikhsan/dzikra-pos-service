@@ -189,3 +189,52 @@ func (r *productRepository) SoftDeleteProductByID(ctx context.Context, tx *sqlx.
 
 	return nil
 }
+
+func (r *productRepository) FindListProductRecipe(ctx context.Context, limit, offset int, search string) ([]dto.GetListProductRecipe, int, error) {
+	args := []interface{}{
+		search, search, limit, offset,
+	}
+
+	var ents []entity.Product
+	if err := r.db.SelectContext(ctx, &ents, r.db.Rebind(queryFindAllProduct), args...); err != nil {
+		log.Error().Err(err).Msg("repository::FindAllProduct - error executing query")
+		return nil, 0, err
+	}
+
+	countArgs := []interface{}{search, search}
+	var total int
+	if err := r.db.GetContext(ctx, &total, r.db.Rebind(queryCountFindAllProduct), countArgs...); err != nil {
+		log.Error().Err(err).Msg("repository::FindAllProduct - error counting articles")
+		return nil, 0, err
+	}
+
+	publicURL := config.Envs.MinioStorage.PublicURL
+	out := make([]dto.GetListProductRecipe, 0, len(ents))
+	for _, v := range ents {
+		out = append(out, dto.GetListProductRecipe{
+			ID:          v.ID,
+			Name:        v.Name,
+			Description: v.Description,
+			Stock:       v.Stock,
+			RealPrice:   v.RealPrice,
+			IsActive:    v.IsActive,
+			RecipeID:    v.RecipeID,
+			ImageUrl:    utils.FormatMediaPathURL(v.ImageUrl, publicURL),
+			ProductCategory: product_category.GetProductCategoryResponse{
+				ID:   v.ProductCategoryID,
+				Name: v.ProductCategoryName,
+			},
+		})
+	}
+
+	return out, total, nil
+}
+
+func (r *productRepository) UpdateProductStock(ctx context.Context, tx *sqlx.Tx, data *entity.Product) error {
+	if _, err := tx.ExecContext(ctx, r.db.Rebind(queryUpdateProductStock), data.ID, data.Stock); err != nil {
+		log.Error().Err(err).Int("id", data.ID).Int("stock", data.Stock).Msg("repository:UpdateProductStock - failed update product stock")
+		return err
+	}
+
+	return nil
+}

@@ -50,3 +50,16 @@ type GetListProduct struct {
 	IsActive        bool                                        `json:"is_active"`
 	ProductCategory product_category.GetProductCategoryResponse `json:"product_category"`
 }
+
+type GetListProductRecipe struct {
+	ID              int                                         `json:"id"`
+	Name            string                                      `json:"name"`
+	Description     string                                      `json:"desc"`
+	Stock           int                                         `json:"stock"`
+	RealPrice       int                                         `json:"real_price"`
+	CreatedAt       string                                      `json:"created_at"`
+	ImageUrl        string                                      `json:"image_url"`
+	IsActive        bool                                        `json:"is_active"`
+	RecipeID        int                                         `json:"recipe_id"`
+	ProductCategory product_category.GetProductCategoryResponse `json:"product_category"`
+}

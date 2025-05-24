@@ -62,4 +62,5 @@ var (
 	ErrArticleCategoryNotFound             = "Article category not found"
 	ErrArticleNotFound                     = "Article not found"
 	ErrMemberNotFound                      = "Member not found"
+	ErrIngredientStockNotFound             = "Ingredient stock not found"
 )

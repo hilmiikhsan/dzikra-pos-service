@@ -47,6 +47,7 @@ const (
 			p.is_active,
 			p.product_category_id,
 			p.real_price,
+			p.recipe_id,
 			pc.name AS product_category_name
 		FROM products p
 		JOIN product_categories pc ON p.product_category_id = pc.id
@@ -63,6 +64,7 @@ const (
 			p.is_active,
 			p.product_category_id,
 			p.real_price,
+			p.recipe_id,
 			pc.name AS product_category_name
 		FROM products p
 		JOIN product_categories pc ON p.product_category_id = pc.id
@@ -92,5 +94,11 @@ const (
 		UPDATE products
 		SET deleted_at = NOW()
 		WHERE id = ? AND deleted_at IS NULL
+	`
+
+	queryUpdateProductStock = `
+		UPDATE products
+        SET stock = $2
+        WHERE id = $1
 	`
 )
