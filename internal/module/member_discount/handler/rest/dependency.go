@@ -4,6 +4,7 @@ import (
 	externalUser "github.com/Digitalkeun-Creative/be-dzikra-pos-service/external/user"
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/adapter"
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/middleware"
+	memberRepository "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/member/repository"
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/member_discount/ports"
 	memberDiscountrepository "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/member_discount/repository"
 	memberDiscountService "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/member_discount/service"
@@ -29,11 +30,13 @@ func NewMemberDiscountHandler() *memberDiscountHandler {
 
 	// repository
 	memberDiscountrepository := memberDiscountrepository.NewMemberDiscountRepository(adapter.Adapters.DzikraPostgres)
+	memberRepository := memberRepository.NewMemberRepository(adapter.Adapters.DzikraPostgres)
 
 	// member discount service
 	memberDiscount := memberDiscountService.NewMemberDiscountService(
 		adapter.Adapters.DzikraPostgres,
 		memberDiscountrepository,
+		memberRepository,
 	)
 
 	// handler

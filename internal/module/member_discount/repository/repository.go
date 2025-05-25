@@ -75,3 +75,19 @@ func (r *memberDiscountRepository) UpdateMemberDiscount(ctx context.Context, tx 
 
 	return res, nil
 }
+
+func (r *memberDiscountRepository) FindFirstMemberDiscount(ctx context.Context) (*entity.MemberDiscount, error) {
+	var res entity.MemberDiscount
+	err := r.db.GetContext(ctx, &res, queryGetFirstMemberDiscount)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			log.Error().Err(err).Msg("repository::GetFirstMemberDiscount - memer discount not found")
+			return &entity.MemberDiscount{Discount: 0}, nil
+		}
+
+		log.Error().Err(err).Msg("repository::GetFirstMemberDiscount - query failed")
+		return nil, err
+	}
+
+	return &res, nil
+}

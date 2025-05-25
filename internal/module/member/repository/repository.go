@@ -181,3 +181,20 @@ func (r *memberRepository) SoftDeleteMemberByID(ctx context.Context, tx *sqlx.Tx
 
 	return nil
 }
+
+func (r *memberRepository) FindMemberByEmailOrPhoneNumber(ctx context.Context, identifier string) (*entity.Member, error) {
+	var res = new(entity.Member)
+
+	err := r.db.GetContext(ctx, res, r.db.Rebind(queryFindMemberByEmailOrPhoneNumber), identifier)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			log.Error().Err(err).Msg("repository::FindMemberByEmailOrPhoneNumber - member not found")
+			return nil, errors.New(constants.ErrMemberNotFound)
+		}
+
+		log.Error().Err(err).Msg("repository::FindMemberByEmailOrPhoneNumber - error executing query")
+		return nil, err
+	}
+
+	return res, nil
+}

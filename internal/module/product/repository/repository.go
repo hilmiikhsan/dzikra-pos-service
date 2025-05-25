@@ -129,9 +129,11 @@ func (r *productRepository) FindProductByID(ctx context.Context, id int) (*entit
 	return res, nil
 }
 
-func (r *productRepository) FindListProduct(ctx context.Context, limit, offset int, search string) ([]dto.GetListProduct, int, error) {
+func (r *productRepository) FindListProduct(ctx context.Context, limit, offset int, search string, productCategoryID int) ([]dto.GetListProduct, int, error) {
 	args := []interface{}{
-		search, search, limit, offset,
+		productCategoryID, productCategoryID,
+		search, search,
+		limit, offset,
 	}
 
 	var ents []entity.Product
@@ -140,7 +142,11 @@ func (r *productRepository) FindListProduct(ctx context.Context, limit, offset i
 		return nil, 0, err
 	}
 
-	countArgs := []interface{}{search, search}
+	countArgs := []interface{}{
+		productCategoryID, productCategoryID,
+		search, search,
+	}
+
 	var total int
 	if err := r.db.GetContext(ctx, &total, r.db.Rebind(queryCountFindAllProduct), countArgs...); err != nil {
 		log.Error().Err(err).Msg("repository::FindAllProduct - error counting articles")

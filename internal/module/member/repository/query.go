@@ -65,4 +65,17 @@ const (
     SET deleted_at = NOW()
     WHERE id = ? AND deleted_at IS NULL
   `
+
+	queryFindMemberByEmailOrPhoneNumber = `
+    SELECT
+      id,
+      name,
+      email,
+      phone_number,
+      created_at
+    FROM members
+    WHERE 
+      deleted_at IS NULL
+      AND (email = $1 OR phone_number = $1)
+  `
 )

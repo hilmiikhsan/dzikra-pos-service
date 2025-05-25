@@ -15,6 +15,7 @@ type MemberRepository interface {
 	UpdateMember(ctx context.Context, tx *sqlx.Tx, data *entity.Member, id uuid.UUID) (*entity.Member, error)
 	FindMemberByID(ctx context.Context, id uuid.UUID) (*entity.Member, error)
 	SoftDeleteMemberByID(ctx context.Context, tx *sqlx.Tx, id uuid.UUID) error
+	FindMemberByEmailOrPhoneNumber(ctx context.Context, identifier string) (*entity.Member, error)
 }
 
 type MemberService interface {

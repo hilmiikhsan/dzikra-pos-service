@@ -231,13 +231,24 @@ func (h *productHandler) updateProduct(c *fiber.Ctx) error {
 
 func (h *productHandler) getListProduct(c *fiber.Ctx) error {
 	var (
-		ctx    = c.Context()
-		page   = c.QueryInt("page", 1)
-		limit  = c.QueryInt("limit", 10)
-		search = c.Query("search", "")
+		ctx           = c.Context()
+		page          = c.QueryInt("page", 1)
+		limit         = c.QueryInt("limit", 10)
+		search        = c.Query("search", "")
+		categoryIDStr = c.Query("category_id", "")
 	)
 
-	res, err := h.service.GetListProduct(ctx, page, limit, search)
+	var productCategoryID int
+	var err error
+	if categoryIDStr != "" {
+		productCategoryID, err = strconv.Atoi(categoryIDStr)
+		if err != nil {
+			log.Warn().Err(err).Msg("handler::getListProduct - Invalid category_id")
+			return c.Status(fiber.StatusBadRequest).JSON(response.Error("Invalid category_id"))
+		}
+	}
+
+	res, err := h.service.GetListProduct(ctx, page, limit, search, productCategoryID)
 	if err != nil {
 		log.Error().Err(err).Msg("handler::getListProduct - Failed to get list product")
 		code, errs := err_msg.Errors[error](err)

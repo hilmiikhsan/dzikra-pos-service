@@ -70,6 +70,7 @@ const (
 		JOIN product_categories pc ON p.product_category_id = pc.id
 		WHERE p.deleted_at IS NULL
 		AND pc.deleted_at IS NULL
+		AND (? = 0 OR p.product_category_id = ?)
 		AND (
 			p.name ILIKE '%' || ? || '%'
 			OR p.description ILIKE '%' || ? || '%'
@@ -84,6 +85,7 @@ const (
 		JOIN product_categories pc ON p.product_category_id = pc.id
 		WHERE
 			p.deleted_at IS NULL
+			AND (? = 0 OR p.product_category_id = ?)
 			AND (
 				p.name ILIKE '%' || ? || '%'
 				OR p.description ILIKE '%' || ? || '%'

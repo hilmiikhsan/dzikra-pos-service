@@ -28,4 +28,11 @@ const (
 		WHERE id = ? AND deleted_at IS NULL
 		RETURNING id, discount, updated_at
 	`
+
+	queryGetFirstMemberDiscount = `
+		SELECT discount
+		FROM member_discounts
+		ORDER BY created_at DESC
+		LIMIT 1
+	`
 )

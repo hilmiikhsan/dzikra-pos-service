@@ -34,3 +34,30 @@ func (h *memberDiscountHandler) createOrUpdateMemberDiscount(c *fiber.Ctx) error
 
 	return c.Status(fiber.StatusCreated).JSON(response.Success(res, ""))
 }
+
+func (h *memberDiscountHandler) checkMemberDiscount(c *fiber.Ctx) error {
+	var (
+		req = new(dto.CheckMemberDiscountRequest)
+		ctx = c.Context()
+	)
+
+	if err := c.BodyParser(req); err != nil {
+		log.Warn().Err(err).Msg("handler::checkMemberDiscount - Failed to parse request body")
+		return c.Status(fiber.StatusBadRequest).JSON(response.Error("Failed to parse request body"))
+	}
+
+	if err := h.validator.Validate(req); err != nil {
+		log.Warn().Err(err).Msg("handler::checkMemberDiscount - Invalid request body")
+		code, errs := err_msg.Errors(err, req)
+		return c.Status(code).JSON(response.Error(errs))
+	}
+
+	res, err := h.service.CheckMemberDiscount(ctx, req)
+	if err != nil {
+		log.Error().Err(err).Msg("handler::checkMemberDiscount - Failed to check member discount")
+		code, errs := err_msg.Errors[error](err)
+		return c.Status(code).JSON(response.Error(errs))
+	}
+
+	return c.Status(fiber.StatusOK).JSON(response.Success(res, ""))
+}

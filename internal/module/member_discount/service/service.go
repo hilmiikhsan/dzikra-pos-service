@@ -3,8 +3,10 @@ package service
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/constants"
+	member "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/member/dto"
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/member_discount/dto"
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/member_discount/entity"
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/pkg/err_msg"
@@ -63,4 +65,36 @@ func (s *memberDiscountService) CreateOrUpdateMemberDiscount(ctx context.Context
 		Discount:  fmt.Sprintf("%d", discount.Discount),
 		UpdatedAt: utils.FormatTime(discount.UpdatedAt),
 	}, nil
+}
+
+func (s *memberDiscountService) CheckMemberDiscount(ctx context.Context, req *dto.CheckMemberDiscountRequest) (*dto.CheckMemberDiscountResponse, error) {
+	memberResult, err := s.memberRepository.FindMemberByEmailOrPhoneNumber(ctx, req.Identifier)
+	if err != nil {
+		if strings.Contains(err.Error(), constants.ErrMemberNotFound) {
+			log.Error().Err(err).Msg("service::CheckMemberDiscount - member not found")
+			return nil, err_msg.NewCustomErrors(fiber.StatusNotFound, err_msg.WithMessage(constants.ErrMemberNotFound))
+		}
+
+		log.Error().Err(err).Msg("service::CheckMemberDiscount - Failed to get member")
+		return nil, err_msg.NewCustomErrors(fiber.StatusInternalServerError, err_msg.WithMessage(constants.ErrInternalServerError))
+	}
+
+	discount, err := s.memberDiscountRepository.FindFirstMemberDiscount(ctx)
+	if err != nil {
+		log.Error().Err(err).Msg("service::CheckMemberDiscount - failed to fetch discount")
+		return nil, err_msg.NewCustomErrors(fiber.StatusInternalServerError, err_msg.WithMessage(constants.ErrInternalServerError))
+	}
+
+	resp := &dto.CheckMemberDiscountResponse{
+		Discount: fmt.Sprintf("%d", discount.Discount),
+		Member: member.GetListMember{
+			ID:          memberResult.ID.String(),
+			Name:        memberResult.Name,
+			Email:       memberResult.Email,
+			PhoneNumber: memberResult.PhoneNumber,
+			CreatedAt:   utils.FormatTime(memberResult.CreatedAt),
+		},
+	}
+
+	return resp, nil
 }

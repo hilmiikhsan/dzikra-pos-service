@@ -17,13 +17,13 @@ func SetupRoutes(app *fiber.App) {
 	var (
 		// userAPI       = app.Group("/api/users")
 		superadminAPI = app.Group("/api/superadmin")
-	// publicAPI     = app.Group("/api")
+		publicAPI     = app.Group("/api")
 	)
 
 	mmember.NewMemberHandler().MemberRoute(superadminAPI)
 	mmemberDiscount.NewMemberDiscountHandler().MemberDiscountRoute(superadminAPI)
-	productCategory.NewProductCategoryHandler().ProductCategoryRoute(superadminAPI)
-	product.NewProductHandler().ProductRoute(superadminAPI)
+	productCategory.NewProductCategoryHandler().ProductCategoryRoute(superadminAPI, publicAPI)
+	product.NewProductHandler().ProductRoute(superadminAPI, publicAPI)
 	tax.NewTaxHandler().TaxRoute(superadminAPI)
 	ingredientStock.NewIngredientStockHandler().IngredientStockRoute(superadminAPI)
 	recipe.NewRecipeHandler().RecipeRoute(superadminAPI)
