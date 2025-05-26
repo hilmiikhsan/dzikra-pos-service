@@ -64,4 +64,5 @@ var (
 	ErrMemberNotFound                      = "Member not found"
 	ErrIngredientStockNotFound             = "Ingredient stock not found"
 	ErrTransactionNotFound                 = "Transaction not found"
+	ErrInvalidDateFormat                   = "Invalid date format, expected YYYY-MM-DD HH:MM:SS"
 )

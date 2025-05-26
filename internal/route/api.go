@@ -1,6 +1,7 @@
 package route
 
 import (
+	expenses "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/expenses/handler/rest"
 	ingredientStock "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/ingredient_stock/handler/rest"
 	mmember "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/member/handler/rest"
 	mmemberDiscount "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/member_discount/handler/rest"
@@ -29,6 +30,7 @@ func SetupRoutes(app *fiber.App) {
 	ingredientStock.NewIngredientStockHandler().IngredientStockRoute(superadminAPI)
 	recipe.NewRecipeHandler().RecipeRoute(superadminAPI)
 	transaction.NewTransactionHandler().TransactionRoute(publicAPI, superadminAPI)
+	expenses.NewExpensesHandler().ExpensesRoute(superadminAPI)
 
 	// fallback route
 	app.Use(func(c *fiber.Ctx) error {
