@@ -23,7 +23,6 @@ func NewTransactionItemRepository(db *sqlx.DB) *transactionItemRepository {
 
 func (r *transactionItemRepository) InsertNewTransactionItem(ctx context.Context, tx *sqlx.Tx, data *entity.TransactionItem) error {
 	_, err := tx.ExecContext(ctx, r.db.Rebind(queryInsertNewTransactionItem),
-		data.ID,
 		data.Quantity,
 		data.TotalAmount,
 		data.ProductName,

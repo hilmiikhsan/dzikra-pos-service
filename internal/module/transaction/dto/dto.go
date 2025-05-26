@@ -80,3 +80,33 @@ type MinIngredientInput struct {
 	Quantity  int `json:"quantity"`
 	ProductID int `json:"product_id"`
 }
+
+type GetListTransactionResponse struct {
+	Transactions []GetListTransaction `json:"transactions"`
+	TotalPages   int                  `json:"total_page"`
+	CurrentPage  int                  `json:"current_page"`
+	PageSize     int                  `json:"page_size"`
+	TotalData    int                  `json:"total_data"`
+}
+
+type GetListTransaction struct {
+	ID                       string `json:"id"`
+	Status                   string `json:"status"`
+	PhonenUmber              string `json:"number_phone"`
+	Name                     string `json:"name"`
+	Email                    string `json:"email"`
+	IsMember                 bool   `json:"is_member"`
+	TotalQuantity            string `json:"total_quantity"`
+	TotalProductAmount       string `json:"total_product_amount"`
+	TotalProductCapitalPrice string `json:"total_product_capital_price"`
+	TotalAmount              string `json:"total_amount"`
+	DiscountPercentage       string `json:"discount_percentage"`
+	VTransactionID           string `json:"v_transaction_id"`
+	VPaymentID               string `json:"v_payment_id"`
+	VPaymentRedirectUrl      string `json:"v_payment_redirect_url"`
+	PaymentType              string `json:"payment_type"`
+	TableNumber              string `json:"table_number"`
+	CreatedAt                string `json:"created_at"`
+	Notes                    string `json:"notes"`
+	TaxAmount                string `json:"tax_amount"`
+}

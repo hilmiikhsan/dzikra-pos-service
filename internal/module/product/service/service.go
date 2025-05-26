@@ -239,15 +239,15 @@ func (s *productService) GetListProduct(ctx context.Context, page, limit int, se
 	currentPage, perPage, offset := utils.Paginate(page, limit)
 
 	// get list products
-	productss, total, err := s.productRepository.FindListProduct(ctx, perPage, offset, search, productCategoryID)
+	products, total, err := s.productRepository.FindListProduct(ctx, perPage, offset, search, productCategoryID)
 	if err != nil {
 		log.Error().Err(err).Msg("service::GetListProduct - error getting list product")
 		return nil, err_msg.NewCustomErrors(fiber.StatusInternalServerError, err_msg.WithMessage(constants.ErrInternalServerError))
 	}
 
-	// check if productss is nil
-	if productss == nil {
-		productss = []dto.GetListProduct{}
+	// check if products is nil
+	if products == nil {
+		products = []dto.GetListProduct{}
 	}
 
 	// calculate total pages
@@ -255,7 +255,7 @@ func (s *productService) GetListProduct(ctx context.Context, page, limit int, se
 
 	// create map response
 	response := dto.GetListProductResponse{
-		Product:     productss,
+		Product:     products,
 		TotalPages:  totalPages,
 		CurrentPage: currentPage,
 		PageSize:    perPage,

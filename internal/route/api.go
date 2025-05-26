@@ -28,7 +28,7 @@ func SetupRoutes(app *fiber.App) {
 	tax.NewTaxHandler().TaxRoute(superadminAPI)
 	ingredientStock.NewIngredientStockHandler().IngredientStockRoute(superadminAPI)
 	recipe.NewRecipeHandler().RecipeRoute(superadminAPI)
-	transaction.NewTransactionHandler().TransactionRoute(publicAPI)
+	transaction.NewTransactionHandler().TransactionRoute(publicAPI, superadminAPI)
 
 	// fallback route
 	app.Use(func(c *fiber.Ctx) error {

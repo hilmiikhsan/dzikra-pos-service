@@ -261,9 +261,16 @@ func (s *transactionService) CreateTransaction(ctx context.Context, req *dto.Cre
 		return nil, err_msg.NewCustomErrors(fiber.StatusInternalServerError, err_msg.WithMessage(constants.ErrInternalServerError))
 	}
 
+	transactionResult, err := s.transactionRepository.FindTransactionWithItemsByID(ctx, transactionID.String())
+	if err != nil {
+		log.Error().Err(err).Msg("service::CreateTransaction - Failed to find transaction with items by ID")
+		return nil, err_msg.NewCustomErrors(fiber.StatusInternalServerError, err_msg.WithMessage(constants.ErrInternalServerError))
+	}
+
 	var transactionItems []dto.TransactionItemResponse
-	for _, item := range req.TransactionItems {
+	for _, item := range transactionResult.TransactionItems {
 		transactionItems = append(transactionItems, dto.TransactionItemResponse{
+			ID:                      item.ID,
 			ProductID:               item.ProductID,
 			ProductName:             item.ProductName,
 			Quantity:                fmt.Sprintf("%d", item.Quantity),
@@ -314,4 +321,36 @@ func (s *transactionService) CreateTransaction(ctx context.Context, req *dto.Cre
 		CreatedAt:                utils.FormatTime(createdAt),
 		TransactionItems:         transactionItems,
 	}, nil
+}
+
+func (s *transactionService) GetListTransaction(ctx context.Context, page, limit int, search string) (*dto.GetListTransactionResponse, error) {
+	// calculate pagination
+	currentPage, perPage, offset := utils.Paginate(page, limit)
+
+	// get list products
+	transactions, total, err := s.transactionRepository.FindListTransaction(ctx, perPage, offset, search)
+	if err != nil {
+		log.Error().Err(err).Msg("service::GetListProduct - error getting list transactions")
+		return nil, err_msg.NewCustomErrors(fiber.StatusInternalServerError, err_msg.WithMessage(constants.ErrInternalServerError))
+	}
+
+	// check if transactions is nil
+	if transactions == nil {
+		transactions = []dto.GetListTransaction{}
+	}
+
+	// calculate total pages
+	totalPages := utils.CalculateTotalPages(total, perPage)
+
+	// create map response
+	response := dto.GetListTransactionResponse{
+		Transactions: transactions,
+		TotalPages:   totalPages,
+		CurrentPage:  currentPage,
+		PageSize:     perPage,
+		TotalData:    total,
+	}
+
+	// return response
+	return &response, nil
 }

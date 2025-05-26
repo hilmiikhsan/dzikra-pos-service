@@ -4,7 +4,6 @@ const (
 	queryInsertNewTransactionItem = `
 		INSERT INTO transaction_items
 		(
-			id,
 			quantity,
 			total_amount,
 			product_name,
@@ -13,6 +12,6 @@ const (
 			product_id,
 			product_capital_price,
 			total_amount_capital_price
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 	`
 )
