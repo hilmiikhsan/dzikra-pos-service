@@ -130,3 +130,16 @@ func (r *recipeRepository) FindDetailRecipes(ctx context.Context, recipeID int) 
 
 	return &detail, nil
 }
+
+func (r *recipeRepository) FindIngredientsWithStock(ctx context.Context, recipeIDs []string) ([]entity.IngredientInfo, error) {
+	query, args, _ := sqlx.In(r.db.Rebind(queryFindIngredientsWithStock), recipeIDs)
+
+	var res []entity.IngredientInfo
+
+	if err := r.db.SelectContext(ctx, &res, r.db.Rebind(query), args...); err != nil {
+		log.Error().Err(err).Msg("repository::FindIngredientsWithStock - Failed to find ingredient recipe with stock")
+		return nil, err
+	}
+
+	return res, nil
+}

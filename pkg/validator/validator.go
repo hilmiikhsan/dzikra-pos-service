@@ -9,7 +9,9 @@ import (
 
 	// "github.com/go-playground/locales/en"
 	// ut "github.com/go-playground/universal-translator"
+	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/infrastructure/config"
 	"github.com/go-playground/validator/v10"
+
 	// en_translations "github.com/go-playground/validator/v10/translations/en"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/rs/zerolog/log"
@@ -101,6 +103,9 @@ func NewValidator() *Validator {
 	}
 	if err := v.RegisterValidation("number", isInteger); err != nil {
 		log.Fatal().Err(err).Msg("Error while registering integer validator")
+	}
+	if err := v.RegisterValidation("callback_finish", isValidCallbackFinish); err != nil {
+		log.Fatal().Err(err).Msg("Error while registering callback finish validator")
 	}
 
 	validatorCustom.validator = v
@@ -345,4 +350,9 @@ func isValidTimeFormat(fl validator.FieldLevel) bool {
 
 	_, err := time.Parse("2006-01-02T15:04:05.000Z", val)
 	return err == nil
+}
+
+func isValidCallbackFinish(fl validator.FieldLevel) bool {
+	val := fl.Field().String()
+	return val == config.Envs.App.Domain
 }

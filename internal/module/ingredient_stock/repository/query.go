@@ -95,4 +95,8 @@ const (
 	queryCountIngredientStockByID = `
 		SELECT COUNT(*) FROM ingredient_stocks WHERE id = $1 AND deleted_at IS NULL
 	`
+
+	queryDecrementStock = `
+		UPDATE ingredient_stocks SET required_stock = required_stock - ? WHERE id = ? AND deleted_at IS NULL
+	`
 )

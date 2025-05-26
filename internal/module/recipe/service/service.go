@@ -13,6 +13,7 @@ import (
 	productEntity "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/product/entity"
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/recipe/dto"
 	recipeEntity "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/recipe/entity"
+	transactionDto "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/transaction/dto"
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/pkg/err_msg"
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/pkg/utils"
 	"github.com/gofiber/fiber/v2"
@@ -302,4 +303,91 @@ func (s *recipeService) UpdateRecipe(ctx context.Context, req *dto.UpdateRecipeR
 	}
 
 	return resp, nil
+}
+
+func (s *recipeService) MinIngredients(ctx context.Context, inputs []transactionDto.MinIngredientInput) error {
+	// 1. product → recipe
+	productIDs := make([]string, len(inputs))
+	for i, in := range inputs {
+		productIDs[i] = strconv.Itoa(in.ProductID)
+	}
+	prods, err := s.productRepository.FindProductRecipeByProductIDs(ctx, productIDs)
+	if err != nil {
+		log.Error().Err(err).Msg("MinIngredients: FindProductRecipeByProductIDs failed")
+		return err_msg.NewCustomErrors(fiber.StatusInternalServerError, err_msg.WithMessage(constants.ErrInternalServerError))
+	}
+	recMap := map[string]string{}
+	for _, p := range prods {
+		if p.RecipeID == 0 {
+			return err_msg.NewCustomErrors(fiber.StatusBadRequest, err_msg.WithMessage("Some products do not have recipes"))
+		}
+		recMap[strconv.Itoa(p.ID)] = strconv.Itoa(p.RecipeID)
+	}
+
+	// 2. ambil bahan & stok (deduplikasi recipeIDs)
+	seen := map[string]bool{}
+	recipeIDs := make([]string, 0, len(recMap))
+	for _, rid := range recMap {
+		if !seen[rid] {
+			recipeIDs = append(recipeIDs, rid)
+			seen[rid] = true
+		}
+	}
+	allIng, err := s.recipeRepository.FindIngredientsWithStock(ctx, recipeIDs)
+	if err != nil {
+		log.Error().Err(err).Msg("MinIngredients: FindIngredientsWithStock failed")
+		return err_msg.NewCustomErrors(fiber.StatusInternalServerError, err_msg.WithMessage(constants.ErrInternalServerError))
+	}
+
+	// 3. decrement stok
+	for _, in := range inputs {
+		key := strconv.Itoa(in.ProductID)
+		rid, ok := recMap[key]
+		if !ok {
+			return err_msg.NewCustomErrors(fiber.StatusBadRequest, err_msg.WithMessage("Invalid product ID"))
+		}
+		for _, ing := range allIng {
+			if ing.RecipeID != rid {
+				continue
+			}
+			need := ing.ReqPerUnit * in.Quantity
+			if ing.StockAmount < need {
+				return err_msg.NewCustomErrors(fiber.StatusBadRequest,
+					err_msg.WithMessage(fmt.Sprintf("Stock insufficient for ingredient %s", ing.IngredientID)))
+			}
+			if derr := s.ingredientStockRepository.DecrementStock(ctx, ing.StockID, need); derr != nil {
+				log.Error().Err(derr).Msg("MinIngredients: DecrementStock failed")
+				return err_msg.NewCustomErrors(fiber.StatusInternalServerError, err_msg.WithMessage(constants.ErrInternalServerError))
+			}
+		}
+	}
+
+	// 4. ambil ulang stok terbaru
+	allIng, err = s.recipeRepository.FindIngredientsWithStock(ctx, recipeIDs)
+	if err != nil {
+		log.Error().Err(err).Msg("MinIngredients: re-fetch stock failed")
+		return err_msg.NewCustomErrors(fiber.StatusInternalServerError, err_msg.WithMessage(constants.ErrInternalServerError))
+	}
+
+	// 5. hitung maxStock per resep
+	maxByRec := map[string]int{}
+	for _, ing := range allIng {
+		possible := ing.StockAmount / ing.ReqPerUnit
+		old, ok := maxByRec[ing.RecipeID]
+		if !ok || possible < old {
+			maxByRec[ing.RecipeID] = possible
+		}
+	}
+
+	// 6. map product→stock dan update
+	prodStock := map[string]int{}
+	for pid, rid := range recMap {
+		prodStock[pid] = maxByRec[rid]
+	}
+	if err := s.productRepository.UpdateProductsStock(ctx, prodStock); err != nil {
+		log.Error().Err(err).Msg("MinIngredients: UpdateProductsStock failed")
+		return err_msg.NewCustomErrors(fiber.StatusInternalServerError, err_msg.WithMessage(constants.ErrInternalServerError))
+	}
+
+	return nil
 }

@@ -180,3 +180,13 @@ func (r *ingredientStockRepository) CountIngredientStockByID(ctx context.Context
 
 	return count, nil
 }
+
+func (r *ingredientStockRepository) DecrementStock(ctx context.Context, stockID string, amount int) error {
+	_, err := r.db.ExecContext(ctx, r.db.Rebind(queryDecrementStock), amount, stockID)
+	if err != nil {
+		log.Error().Err(err).Msg("repository::DecrementStock - Failed to decrement ingredient stock")
+		return err
+	}
+
+	return nil
+}

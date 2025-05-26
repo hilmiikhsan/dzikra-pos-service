@@ -76,6 +76,19 @@ const (
     FROM members
     WHERE 
       deleted_at IS NULL
-      AND (email = $1 OR phone_number = $1)
+      AND (email = $1 OR phone_number = $2)
+  `
+
+	queryFindMemberByEmailAndPhoneNumber = `
+    SELECT
+      id,
+      name,
+      email,
+      phone_number,
+      created_at
+    FROM members
+    WHERE 
+      deleted_at IS NULL
+      AND (email = $1 AND phone_number = $2)
   `
 )

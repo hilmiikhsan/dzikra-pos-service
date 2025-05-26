@@ -210,7 +210,7 @@ func (r *productRepository) FindListProductRecipe(ctx context.Context, limit, of
 	countArgs := []interface{}{search, search}
 	var total int
 	if err := r.db.GetContext(ctx, &total, r.db.Rebind(queryCountFindAllProduct), countArgs...); err != nil {
-		log.Error().Err(err).Msg("repository::FindAllProduct - error counting articles")
+		log.Error().Err(err).Msg("repository::FindAllProduct - error counting product")
 		return nil, 0, err
 	}
 
@@ -240,6 +240,30 @@ func (r *productRepository) UpdateProductStock(ctx context.Context, tx *sqlx.Tx,
 	if _, err := tx.ExecContext(ctx, r.db.Rebind(queryUpdateProductStock), data.ID, data.Stock); err != nil {
 		log.Error().Err(err).Int("id", data.ID).Int("stock", data.Stock).Msg("repository:UpdateProductStock - failed update product stock")
 		return err
+	}
+
+	return nil
+}
+
+func (r *productRepository) FindProductRecipeByProductIDs(ctx context.Context, productIDs []string) ([]entity.Product, error) {
+	var res []entity.Product
+
+	query, args, _ := sqlx.In(r.db.Rebind(queryFindProductRecipeByProductIDs), productIDs)
+
+	if err := r.db.SelectContext(ctx, &res, r.db.Rebind(query), args...); err != nil {
+		log.Error().Err(err).Msg("repository::FindProductRecipeByProductIDs - error find product recipe")
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (r *productRepository) UpdateProductsStock(ctx context.Context, stockMap map[string]int) error {
+	for pid, stk := range stockMap {
+		if _, err := r.db.ExecContext(ctx, r.db.Rebind(queryUpdateProductsStock), stk, stk > 0, pid); err != nil {
+			log.Error().Err(err).Msg("repository::UpdateProductsStock - error update product stock")
+			return err
+		}
 	}
 
 	return nil

@@ -67,6 +67,9 @@ type Config struct {
 	Notification struct {
 		NotificationGrpcHost string `env:"NOTIFICATION_GRPC_HOST" env-default:"localhost:7001"`
 	}
+	Order struct {
+		OrderGrpcHost string `env:"ORDER_GRPC_HOST" env-default:"localhost:7002"`
+	}
 }
 
 // Option is Configure type return func.
@@ -138,6 +141,7 @@ func (c *Configure) Initialize() {
 		Envs.MinioStorage.PublicURL = utils.GetEnv("DZIKRA_MINIO_PUBLIC_URL", Envs.MinioStorage.PublicURL)
 		Envs.Auth.AuthGrpcHost = utils.GetEnv("AUTH_GRPC_HOST", Envs.Auth.AuthGrpcHost)
 		Envs.Notification.NotificationGrpcHost = utils.GetEnv("NOTIFICATION_GRPC_HOST", Envs.Notification.NotificationGrpcHost)
+		Envs.Order.OrderGrpcHost = utils.GetEnv("ORDER_GRPC_HOST", Envs.Order.OrderGrpcHost)
 	})
 }
 

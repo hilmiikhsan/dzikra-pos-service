@@ -42,3 +42,11 @@ type RecipeDetail struct {
 	Product      ProductEntity
 	Ingredients  []IngredientDetail
 }
+
+type IngredientInfo struct {
+	RecipeID     string `db:"recipe_id"`
+	IngredientID string `db:"ingredient_id"`
+	ReqPerUnit   int    `db:"required_stock"`
+	StockID      string `db:"stock_id"`
+	StockAmount  int    `db:"stock_amount"`
+}

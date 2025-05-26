@@ -182,10 +182,10 @@ func (r *memberRepository) SoftDeleteMemberByID(ctx context.Context, tx *sqlx.Tx
 	return nil
 }
 
-func (r *memberRepository) FindMemberByEmailOrPhoneNumber(ctx context.Context, identifier string) (*entity.Member, error) {
+func (r *memberRepository) FindMemberByEmailOrPhoneNumber(ctx context.Context, email, phoneNumber string) (*entity.Member, error) {
 	var res = new(entity.Member)
 
-	err := r.db.GetContext(ctx, res, r.db.Rebind(queryFindMemberByEmailOrPhoneNumber), identifier)
+	err := r.db.GetContext(ctx, res, r.db.Rebind(queryFindMemberByEmailOrPhoneNumber), email, phoneNumber)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Error().Err(err).Msg("repository::FindMemberByEmailOrPhoneNumber - member not found")
@@ -193,6 +193,23 @@ func (r *memberRepository) FindMemberByEmailOrPhoneNumber(ctx context.Context, i
 		}
 
 		log.Error().Err(err).Msg("repository::FindMemberByEmailOrPhoneNumber - error executing query")
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (r *memberRepository) FindMemberByEmailAndPhoneNumber(ctx context.Context, email, phoneNumber string) (*entity.Member, error) {
+	var res = new(entity.Member)
+
+	err := r.db.GetContext(ctx, res, r.db.Rebind(queryFindMemberByEmailAndPhoneNumber), email, phoneNumber)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			log.Error().Err(err).Msg("repository::FindMemberByEmailAndPhoneNumber - member not found")
+			return nil, errors.New(constants.ErrMemberNotFound)
+		}
+
+		log.Error().Err(err).Msg("repository::FindMemberByEmailAndPhoneNumber - error executing query")
 		return nil, err
 	}
 

@@ -48,9 +48,11 @@ const (
 			p.product_category_id,
 			p.real_price,
 			p.recipe_id,
-			pc.name AS product_category_name
+			pc.name AS product_category_name,
+			r.capital_price
 		FROM products p
 		JOIN product_categories pc ON p.product_category_id = pc.id
+		JOIN recipes r ON r.id = p.recipe_id
 		WHERE p.id = ? AND p.deleted_at IS NULL
 	`
 
@@ -102,5 +104,15 @@ const (
 		UPDATE products
         SET stock = $2
         WHERE id = $1
+	`
+
+	queryFindProductRecipeByProductIDs = `
+		SELECT id AS product_id, recipe_id
+          FROM products
+         WHERE id IN (?)
+	`
+
+	queryUpdateProductsStock = `
+		UPDATE products SET stock = ?, is_active = ? WHERE id = ? AND deleted_at IS NULL
 	`
 )

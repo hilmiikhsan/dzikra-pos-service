@@ -68,7 +68,7 @@ func (s *memberDiscountService) CreateOrUpdateMemberDiscount(ctx context.Context
 }
 
 func (s *memberDiscountService) CheckMemberDiscount(ctx context.Context, req *dto.CheckMemberDiscountRequest) (*dto.CheckMemberDiscountResponse, error) {
-	memberResult, err := s.memberRepository.FindMemberByEmailOrPhoneNumber(ctx, req.Identifier)
+	memberResult, err := s.memberRepository.FindMemberByEmailOrPhoneNumber(ctx, req.Identifier, req.Identifier)
 	if err != nil {
 		if strings.Contains(err.Error(), constants.ErrMemberNotFound) {
 			log.Error().Err(err).Msg("service::CheckMemberDiscount - member not found")

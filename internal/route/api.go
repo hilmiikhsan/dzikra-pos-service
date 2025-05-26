@@ -8,6 +8,7 @@ import (
 	productCategory "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/product_category/handler/rest"
 	recipe "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/recipe/handler/rest"
 	tax "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/tax/handler/rest"
+	transaction "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/transaction/handler/rest"
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/pkg/response"
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"
@@ -27,6 +28,7 @@ func SetupRoutes(app *fiber.App) {
 	tax.NewTaxHandler().TaxRoute(superadminAPI)
 	ingredientStock.NewIngredientStockHandler().IngredientStockRoute(superadminAPI)
 	recipe.NewRecipeHandler().RecipeRoute(superadminAPI)
+	transaction.NewTransactionHandler().TransactionRoute(publicAPI)
 
 	// fallback route
 	app.Use(func(c *fiber.Ctx) error {

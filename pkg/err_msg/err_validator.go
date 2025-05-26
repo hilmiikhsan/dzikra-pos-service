@@ -214,6 +214,9 @@ func errorValidationHandler[T any](err error, payload *T) (int, map[string][]str
 		case "url":
 			message = fmt.Sprintf("%s is not a valid URL.", fieldInMsg)
 			// message = fmt.Sprintf("%s bukan URL yang valid.", fieldInMsg)
+		case "callback_finish":
+			message = fmt.Sprintf("%s is not a valid callback finish.", fieldInMsg)
+			// message = fmt.Sprintf("%s bukan callback finish yang valid.", fieldInMsg)
 		}
 
 		errorMessages[field] = append(errorMessages[field], message)

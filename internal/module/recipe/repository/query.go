@@ -55,4 +55,12 @@ const (
 		JOIN ingredient_stocks s ON s.id = i.ingredient_stock_id
 		WHERE i.recipe_id = $1
 	`
+
+	queryFindIngredientsWithStock = `
+		SELECT ir.recipe_id, ir.ingredient_id, ir.required_stock,
+               s.id AS stock_id, s.required_stock AS stock_amount
+          FROM ingredient_recipes ir
+          JOIN ingredient_stocks s ON s.ingredient_id = ir.ingredient_id
+         WHERE ir.recipe_id IN (?)
+	`
 )

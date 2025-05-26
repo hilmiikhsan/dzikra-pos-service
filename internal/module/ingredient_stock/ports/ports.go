@@ -16,6 +16,7 @@ type IngredientStockRepository interface {
 	SoftDeleteIngredientStockByID(ctx context.Context, tx *sqlx.Tx, id int) error
 	FindIngredientStockByIDs(ctx context.Context, ids []int) ([]entity.IngredientStock, error)
 	CountIngredientStockByID(ctx context.Context, id int) (int, error)
+	DecrementStock(ctx context.Context, stockID string, amount int) error
 }
 
 type IngredientStockService interface {

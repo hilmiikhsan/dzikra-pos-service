@@ -12,6 +12,7 @@ type Product struct {
 	IsActive            bool      `db:"is_active"`
 	ProductCategoryID   int       `db:"product_category_id"`
 	ProductCategoryName string    `db:"product_category_name"`
+	CapitalPrice        int       `db:"capital_price"`
 	RecipeID            int       `db:"recipe_id"`
 	CreatedAt           time.Time `db:"created_at"`
 }

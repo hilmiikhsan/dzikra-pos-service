@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package transaction;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "./transaction";
+
+// The transaction service definition
+service TransactionService {
+  // Create transaction using a template
+  rpc CreateTransaction (CreateTransactionRequest) 
+    returns (CreateTransactionResponse);
+}
+
+message CreateTransactionRequest {
+  string name = 1;
+  string email = 2;
+  string phone_number = 3;
+  repeated TransactionRequest transaction_requests = 4;
+  string callback_finish = 5;
+  string table_number = 6;
+  string notes = 7;
+  string payment_type = 8;
+  string total_money = 9;
+  string status = 10;
+  bool is_member = 11;
+  int64 total_quantity = 12;
+  int64 total_product_amount = 13;
+  int64 total_amount = 14;
+  string v_payment_id = 15;
+  string v_payment_redirect_url = 16;
+  string v_transaction_id = 17;
+  int64 discount_percentage = 18;
+  int64 change_money = 19;
+  int64 total_product_capital_price = 20;
+  int64 tax_amount = 21;
+  repeated TransactionItem transaction_items = 22;
+  string transaction_id = 23;
+}
+
+message CreateTransactionResponse {
+  string v_transaction_id = 1;
+  string v_payment_id = 2;
+  string v_payment_redirect_url = 3;
+  string created_at = 4;
+  repeated TransactionItem transaction_items = 5;
+  string message = 6;
+}
+
+message TransactionRequest {
+  int64 quantity = 1;
+  int64 product_id = 2;
+}
+
+message TransactionItem {
+  int64 id = 1;
+  string quantity = 2;
+  string total_amount = 3;
+  string product_name = 4;
+  string product_price = 5;
+  string transaction_id = 6;
+  int64 product_id = 7;
+  string total_amount_capital_price = 8;
+  string product_capital_price = 9;
+}

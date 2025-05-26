@@ -17,6 +17,8 @@ type ProductRepository interface {
 	SoftDeleteProductByID(ctx context.Context, tx *sqlx.Tx, id int) error
 	FindListProductRecipe(ctx context.Context, limit, offset int, search string) ([]dto.GetListProductRecipe, int, error)
 	UpdateProductStock(ctx context.Context, tx *sqlx.Tx, data *entity.Product) error
+	FindProductRecipeByProductIDs(ctx context.Context, productIDs []string) ([]entity.Product, error)
+	UpdateProductsStock(ctx context.Context, stockMap map[string]int) error
 }
 
 type ProductService interface {
