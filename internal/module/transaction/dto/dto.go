@@ -110,3 +110,26 @@ type GetListTransaction struct {
 	Notes                    string `json:"notes"`
 	TaxAmount                string `json:"tax_amount"`
 }
+
+type GetTransactionDetailResponse struct {
+	ID                       string                    `json:"id"`
+	Status                   string                    `json:"status"`
+	PhoneNumber              string                    `json:"number_phone"`
+	Name                     string                    `json:"name"`
+	Email                    string                    `json:"email"`
+	IsMember                 bool                      `json:"is_member"`
+	TotalQuantity            string                    `json:"total_quantity"`
+	TotalProductAmount       string                    `json:"total_product_amount"`
+	TotalProductCapitalPrice string                    `json:"total_product_capital_price"`
+	TotalAmount              string                    `json:"total_amount"`
+	DiscountPercentage       string                    `json:"discount_percentage"`
+	VTransactionID           string                    `json:"v_transaction_id"`
+	VPaymentID               string                    `json:"v_payment_id"`
+	VPaymentRedirectUrl      string                    `json:"v_payment_redirect_url"`
+	PaymentType              string                    `json:"payment_type"`
+	TableNumber              string                    `json:"table_number"`
+	CreatedAt                string                    `json:"created_at"`
+	Notes                    string                    `json:"notes"`
+	TaxAmount                string                    `json:"tax_amount"`
+	TransactionItem          []TransactionItemResponse `json:"TransactionItem"`
+}

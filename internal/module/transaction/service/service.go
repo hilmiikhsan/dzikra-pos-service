@@ -354,3 +354,56 @@ func (s *transactionService) GetListTransaction(ctx context.Context, page, limit
 	// return response
 	return &response, nil
 }
+
+func (s *transactionService) GetTransactionDetail(ctx context.Context, id string) (*dto.GetTransactionDetailResponse, error) {
+	transactionResult, err := s.transactionRepository.FindTransactionWithItemsByID(ctx, id)
+	if err != nil {
+		if strings.Contains(err.Error(), constants.ErrTransactionNotFound) {
+			log.Error().Err(err).Str("id", id).Msg("service::GetTransactionDetail - transaction not found")
+			return nil, err_msg.NewCustomErrors(fiber.StatusNotFound, err_msg.WithMessage(constants.ErrTransactionNotFound))
+		}
+
+		log.Error().Err(err).Msg("service::GetTransactionDetail - failed to find transaction")
+		return nil, err_msg.NewCustomErrors(fiber.StatusInternalServerError, err_msg.WithMessage(constants.ErrInternalServerError))
+	}
+
+	items := make([]dto.TransactionItemResponse, len(transactionResult.TransactionItems))
+	for i, it := range transactionResult.TransactionItems {
+		items[i] = dto.TransactionItemResponse{
+			ID:                      it.ID,
+			Quantity:                fmt.Sprintf("%d", it.Quantity),
+			TotalAmount:             fmt.Sprintf("%d", it.TotalAmount),
+			ProductName:             it.ProductName,
+			ProductPrice:            fmt.Sprintf("%d", it.ProductPrice),
+			TransactionID:           it.TransactionID.String(),
+			ProductID:               it.ProductID,
+			TotalAmountCapitalPrice: fmt.Sprintf("%d", it.TotalAmountCapitalPrice),
+			ProductCapitalPrice:     fmt.Sprintf("%d", it.ProductCapitalPrice),
+		}
+	}
+
+	response := dto.GetTransactionDetailResponse{
+		ID:                       transactionResult.ID.String(),
+		Status:                   transactionResult.Status,
+		PhoneNumber:              transactionResult.PhoneNumber,
+		Name:                     transactionResult.Name,
+		Email:                    transactionResult.Email,
+		IsMember:                 transactionResult.IsMember,
+		TotalQuantity:            fmt.Sprintf("%d", transactionResult.TotalQuantity),
+		TotalProductAmount:       fmt.Sprintf("%d", transactionResult.TotalProductAmount),
+		TotalProductCapitalPrice: fmt.Sprintf("%d", transactionResult.TotalProductCapitalPrice),
+		TotalAmount:              fmt.Sprintf("%d", transactionResult.TotalAmount),
+		DiscountPercentage:       fmt.Sprintf("%d", transactionResult.DiscountPercentage),
+		VTransactionID:           transactionResult.VTransactionID,
+		VPaymentID:               transactionResult.VPaymentID,
+		VPaymentRedirectUrl:      transactionResult.VPaymentRedirectUrl,
+		PaymentType:              transactionResult.PaymentType,
+		TableNumber:              fmt.Sprintf("%d", transactionResult.TableNumber),
+		CreatedAt:                transactionResult.CreatedAt.Format(time.RFC3339),
+		Notes:                    transactionResult.Notes,
+		TaxAmount:                fmt.Sprintf("%d", transactionResult.TaxAmount),
+		TransactionItem:          items,
+	}
+
+	return &response, nil
+}

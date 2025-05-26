@@ -2,9 +2,12 @@ package repository
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
+	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/constants"
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/transaction/dto"
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/transaction/entity"
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/transaction/ports"
@@ -135,12 +138,22 @@ func (r *transactionRepository) FindTransactionWithItemsByID(ctx context.Context
 	var txRow entity.Transaction
 
 	if err := r.db.GetContext(ctx, &txRow, r.db.Rebind(queryFindTransactionWithItemsByID), id); err != nil {
+		if err == sql.ErrNoRows {
+			log.Warn().Str("id", id).Msg("repository::FindTransactionWithItemsByID - transaction not found")
+			return nil, errors.New(constants.ErrTransactionNotFound)
+		}
+
 		log.Error().Err(err).Msg("repository::FindTransactionWithItemsByID - failed to get transaction")
 		return nil, err
 	}
 
 	var items []transactionItemEntity.TransactionItem
 	if err := r.db.SelectContext(ctx, &items, r.db.Rebind(queryFindItemsByTransactionID), id); err != nil {
+		if err == sql.ErrNoRows {
+			log.Warn().Str("id", id).Msg("repository::FindTransactionWithItemsByID - transaction not found")
+			return nil, errors.New(constants.ErrTransactionNotFound)
+		}
+
 		log.Error().Err(err).Msg("repository::FindTransactionWithItemsByID - failed to get transaction items")
 		return nil, err
 	}

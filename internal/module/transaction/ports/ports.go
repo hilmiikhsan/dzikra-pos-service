@@ -19,4 +19,5 @@ type TransactionRepository interface {
 type TransactionService interface {
 	CreateTransaction(ctx context.Context, req *dto.CreateTransactionRequest, tableNumber int) (*dto.CreateTransactionResponse, error)
 	GetListTransaction(ctx context.Context, page, limit int, search string) (*dto.GetListTransactionResponse, error)
+	GetTransactionDetail(ctx context.Context, id string) (*dto.GetTransactionDetailResponse, error)
 }

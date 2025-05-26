@@ -63,4 +63,5 @@ var (
 	ErrArticleNotFound                     = "Article not found"
 	ErrMemberNotFound                      = "Member not found"
 	ErrIngredientStockNotFound             = "Ingredient stock not found"
+	ErrTransactionNotFound                 = "Transaction not found"
 )
