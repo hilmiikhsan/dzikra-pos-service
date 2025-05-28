@@ -1,7 +1,9 @@
 package service
 
 import (
+	externalNotification "github.com/Digitalkeun-Creative/be-dzikra-pos-service/external/notification"
 	externalTransaction "github.com/Digitalkeun-Creative/be-dzikra-pos-service/external/transaction"
+	externalUserFcmToken "github.com/Digitalkeun-Creative/be-dzikra-pos-service/external/user_fcm_token"
 	memberPorts "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/member/ports"
 	memberDiscountPorts "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/member_discount/ports"
 	productPorts "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/product/ports"
@@ -24,6 +26,8 @@ type transactionService struct {
 	taxRepository             taxPorts.TaxRepository
 	recipeService             recipePorts.RecipeService
 	externalTransaction       externalTransaction.ExternalTransaction
+	externalNotification      externalNotification.ExternalNotification
+	externalUserFcmToken      externalUserFcmToken.ExternalUserFcmToken
 }
 
 func NewTransactionService(
@@ -36,6 +40,8 @@ func NewTransactionService(
 	taxRepository taxPorts.TaxRepository,
 	recipeService recipePorts.RecipeService,
 	externalTransaction externalTransaction.ExternalTransaction,
+	externalNotification externalNotification.ExternalNotification,
+	externalUserFcmToken externalUserFcmToken.ExternalUserFcmToken,
 ) *transactionService {
 	return &transactionService{
 		db:                        db,
@@ -47,5 +53,7 @@ func NewTransactionService(
 		taxRepository:             taxRepository,
 		recipeService:             recipeService,
 		externalTransaction:       externalTransaction,
+		externalNotification:      externalNotification,
+		externalUserFcmToken:      externalUserFcmToken,
 	}
 }

@@ -1,8 +1,10 @@
 package rest
 
 import (
+	externalNotification "github.com/Digitalkeun-Creative/be-dzikra-pos-service/external/notification"
 	externalTransaction "github.com/Digitalkeun-Creative/be-dzikra-pos-service/external/transaction"
 	externalUser "github.com/Digitalkeun-Creative/be-dzikra-pos-service/external/user"
+	externalUserFcmToken "github.com/Digitalkeun-Creative/be-dzikra-pos-service/external/user_fcm_token"
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/adapter"
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/middleware"
 	ingredientRepository "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/ingredient/repository"
@@ -34,6 +36,8 @@ func NewTransactionHandler() *transactionHandler {
 	// external
 	externalAuth := &externalUser.External{}
 	externalTransaction := &externalTransaction.External{}
+	externalNotification := &externalNotification.External{}
+	externalUserFcmToken := &externalUserFcmToken.External{}
 
 	// middleware
 	middlewareHandler := middleware.NewAuthMiddleware(externalAuth)
@@ -69,6 +73,8 @@ func NewTransactionHandler() *transactionHandler {
 		taxRepository,
 		recipeService,
 		externalTransaction,
+		externalNotification,
+		externalUserFcmToken,
 	)
 
 	// handler

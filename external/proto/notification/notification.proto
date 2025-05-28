@@ -1,0 +1,132 @@
+syntax = "proto3";
+
+package notification;
+
+option go_package = "./notification";
+
+// The Notification service definition
+service NotificationService {
+  // Send a notification using a template
+  rpc SendNotification (SendNotificationRequest) 
+    returns (SendNotificationResponse);
+  rpc GetNotificationByType (GetNotificationByTypeRequest) 
+    returns (GetNotificationByTypeResponse);
+  rpc CreateNotification (CreateNotificationRequest)
+    returns (CreateNotificationResponse);
+  rpc GetListNotification (GetListNotificationRequest)
+    returns (GetListNotificationResponse);
+  rpc SendFcmBatchNotification (SendFcmBatchNotificationRequest)
+    returns (SendFcmBatchNotificationResponse);
+  rpc SendFcmNotification (SendFcmNotificationRequest)
+    returns (SendFcmNotificationResponse);
+  rpc SendTransactionEamil (SendTransactionEmailRequest)
+    returns (SendTransactionEmailResponse);
+}
+
+// The request message containing notification details
+message SendNotificationRequest {
+  string template_name = 1;       
+  string recipient = 2;         
+  map<string, string> placeholders = 3; 
+}
+
+// The response message after attempting to send the notification
+message SendNotificationResponse {
+  string message = 1;           
+}
+
+message GetNotificationByTypeRequest {
+  string type = 1;
+}
+
+message GetNotificationByTypeResponse {
+  string id = 1;
+  string type = 2;
+  string name = 3;
+  string message = 4;
+}
+
+message CreateNotificationRequest {
+  string title = 1;
+  string detail = 2;
+  string url = 3;
+  string n_type_id = 4;
+  string user_id = 5;
+}
+
+message CreateNotificationResponse {
+  string message = 1;
+}
+
+message GetListNotificationRequest {
+  int32 page = 1;
+  int32 limit = 2;
+  string search = 3;
+}
+
+message GetListNotificationResponse {
+  repeated NotificationDetail notifications = 1;
+  int32 total_page = 2;
+  int32 current_page = 3;
+  int32 page_size = 4;
+  int32 total_data = 5;
+  string message = 6;
+}
+
+message NotificationDetail {
+  int64 id = 1;
+  string title = 2;
+  string detail = 3;
+  string url = 4;
+  string n_type_id = 5;
+  string user_id = 6;
+  string created_at = 7;
+}
+
+message SendFcmBatchNotificationRequest {
+  repeated string fcm_tokens = 1;
+  string title = 2;
+  string body = 3;
+}
+
+message SendFcmBatchNotificationResponse {
+  string message = 1;
+}
+
+message SendFcmNotificationRequest {
+  string fcm_token = 1;
+  string title = 2;
+  string body = 3;
+  string user_id = 4;
+  string full_name = 5;
+  string email = 6;
+  bool is_status_changed = 7;
+}
+
+message SendFcmNotificationResponse {
+  string message = 1;
+}
+
+message SendTransactionEmailRequest {
+  string to_name = 1;
+  string to_email = 2;
+  repeated OrderItem items = 3;
+  int64 total_product_amount = 4;
+  int64 total_transaction_amount = 5;
+  int64 total_discount = 6;
+  int64 total_quantity = 7;
+  int64 tax_amount = 8;
+  int64 tax_value = 9;
+  bool is_status_changed = 10;
+}
+
+message SendTransactionEmailResponse {
+  string message = 1;
+}
+
+message OrderItem {
+  string product_name = 1;
+  int64 quantity = 2;
+  int64 product_price = 3;
+  int64 total_price = 4;
+}

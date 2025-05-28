@@ -7,9 +7,11 @@ import (
 	"runtime"
 	"syscall"
 
+	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/cmd/proto/payment"
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/adapter"
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/infrastructure"
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/infrastructure/config"
+	transactionService "github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/transaction/handler/grpc"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
@@ -52,6 +54,8 @@ func RunServeGRPC() {
 	if err := adapter.Adapters.Sync(opts...); err != nil {
 		log.Fatal().Err(err).Msg("Failed to sync adapters")
 	}
+
+	payment.RegisterPaymentCallbackServiceServer(grpcServer, transactionService.NewTransactionAPI())
 
 	go func() {
 		log.Info().Msgf("gRPC server is running on port %s", envs.App.GrpcPort)

@@ -7,4 +7,5 @@ const (
 	OrderStatusProcess          = "Di Proses"
 	OrderPaymentCash            = "tunai"
 	OrderPaymentNonCash         = "non-tunai"
+	OrderStatusFinished         = "Selesai"
 )

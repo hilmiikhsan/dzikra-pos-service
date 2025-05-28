@@ -45,9 +45,9 @@ seed:
 # make seed total=10 table=roles
 	$(GO_CMD) run $(MAIN) seed -total=$(total) -table=$(table)
 
-PROTO_SRC_DIR := ./cmd/proto/tokenvalidation
-PROTO_OUT_DIR := ./cmd/proto/tokenvalidation
-PROTO_FILE := tokenvalidation.proto
+PROTO_SRC_DIR := ./cmd/proto/payment
+PROTO_OUT_DIR := ./cmd/proto/payment
+PROTO_FILE := payment.proto
 
 generate-proto:
 	protoc --proto_path=$(PROTO_SRC_DIR) \

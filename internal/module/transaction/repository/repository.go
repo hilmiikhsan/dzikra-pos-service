@@ -90,7 +90,12 @@ func (r *transactionRepository) UpdateTransactionByID(ctx context.Context, tx *s
 }
 
 func (r *transactionRepository) FindListTransaction(ctx context.Context, limit, offset int, search string) ([]dto.GetListTransaction, int, error) {
-	args := []interface{}{search, search, search, limit, offset}
+	args := []interface{}{
+		constants.OrderStatusProcess,
+		constants.OrderStatusFinished,
+		search, search, search,
+		limit, offset,
+	}
 
 	var ents []entity.Transaction
 	if err := r.db.SelectContext(ctx, &ents, r.db.Rebind(queryFindListTransaction), args...); err != nil {
@@ -98,7 +103,11 @@ func (r *transactionRepository) FindListTransaction(ctx context.Context, limit, 
 		return nil, 0, err
 	}
 
-	countArgs := []interface{}{search, search, search}
+	countArgs := []interface{}{
+		constants.OrderStatusProcess,
+		constants.OrderStatusFinished,
+		search, search, search,
+	}
 
 	var total int
 	if err := r.db.GetContext(ctx, &total, r.db.Rebind(queryCountFindListTransaction), countArgs...); err != nil {
@@ -160,4 +169,61 @@ func (r *transactionRepository) FindTransactionWithItemsByID(ctx context.Context
 
 	txRow.TransactionItems = items
 	return &txRow, nil
+}
+
+func (R *transactionRepository) FindTransactionByVPaymentID(ctx context.Context, vpaymentID string) (*entity.Transaction, error) {
+	var txRow entity.Transaction
+
+	if err := R.db.GetContext(ctx, &txRow, R.db.Rebind(queryFindTransactionByVPaymentID), vpaymentID); err != nil {
+		if err == sql.ErrNoRows {
+			log.Warn().Str("vpayment_id", vpaymentID).Msg("repository::FindTransactionByVPaymentID - transaction not found")
+			return nil, errors.New(constants.ErrTransactionNotFound)
+		}
+
+		log.Error().Err(err).Msg("repository::FindTransactionByVPaymentID - failed to get transaction by VPayment ID")
+		return nil, err
+	}
+
+	return &txRow, nil
+}
+
+func (r *transactionRepository) UpdateTransactionStatus(ctx context.Context, tx *sqlx.Tx, id, status string) (*entity.Transaction, error) {
+	var res = new(entity.Transaction)
+
+	err := tx.QueryRowContext(ctx, r.db.Rebind(queryUpdateTransactionStatus),
+		status,
+		id,
+	).Scan(
+		&res.ID,
+		&res.Status,
+		&res.PhoneNumber,
+		&res.Name,
+		&res.Email,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			errMessage := fmt.Errorf("repository::UpdateTransactionStatus - transaction with id %s is not found", id)
+			log.Error().Err(err).Msg(errMessage.Error())
+			return nil, errors.New(constants.ErrTransactionNotFound)
+		}
+
+		log.Error().Err(err).Any("payload", status).Msg("repository::UpdateTransactionStatus - Failed to update transaction status")
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (r *transactionRepository) DuplicateToTransactionHistory(ctx context.Context, tx *sqlx.Tx, data *entity.Transaction) error {
+	if _, err := r.db.ExecContext(ctx, r.db.Rebind(queryDuplicateToTransactionHistory), data.ID); err != nil {
+		log.Error().Err(err).Msg("repo::DuplicateToTransactionHistory - Failed to duplicate transaction to history")
+		return err
+	}
+
+	if _, err := r.db.ExecContext(ctx, r.db.Rebind(queryDuplicateToTransactionItemsHistory), data.ID); err != nil {
+		log.Error().Err(err).Msg("repo::DuplicateToTransactionHistory - Failed to duplicate transaction items to history")
+		return err
+	}
+
+	return nil
 }

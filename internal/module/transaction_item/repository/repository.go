@@ -39,3 +39,15 @@ func (r *transactionItemRepository) InsertNewTransactionItem(ctx context.Context
 
 	return nil
 }
+
+func (r *transactionItemRepository) FindTransactionItemByTransactionID(ctx context.Context, transactionID string) ([]*entity.TransactionItem, error) {
+	var res []*entity.TransactionItem
+
+	err := r.db.SelectContext(ctx, &res, r.db.Rebind(queryFindTransactionItemByTransactionID), transactionID)
+	if err != nil {
+		log.Error().Err(err).Str("transactionID", transactionID).Msg("repository::FindTransactionItemByTransactionID - Failed to find transaction items")
+		return nil, err
+	}
+
+	return res, nil
+}

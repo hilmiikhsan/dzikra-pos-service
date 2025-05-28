@@ -133,3 +133,20 @@ type GetTransactionDetailResponse struct {
 	TaxAmount                string                    `json:"tax_amount"`
 	TransactionItem          []TransactionItemResponse `json:"TransactionItem"`
 }
+
+type PaymentCallbackRequest struct {
+	PaymentID     string `json:"payment_id" validate:"required"`
+	TransactionID string `json:"transaction_id" validate:"required"`
+	Status        string `json:"status" validate:"required"`
+	UserFcmToken  string `json:"user_fcm_token" validate:"required"`
+	UserID        string `json:"user_id" validate:"required"`
+	FullName      string `json:"full_name" validate:"required"`
+	Email         string `json:"email" validate:"required"`
+}
+
+type EmailItem struct {
+	ProductName  string
+	Quantity     int
+	ProductPrice string
+	TotalPrice   string
+}

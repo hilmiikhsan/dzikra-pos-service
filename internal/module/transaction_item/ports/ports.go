@@ -9,4 +9,5 @@ import (
 
 type TransactionItemRepository interface {
 	InsertNewTransactionItem(ctx context.Context, tx *sqlx.Tx, data *entity.TransactionItem) error
+	FindTransactionItemByTransactionID(ctx context.Context, transactionID string) ([]*entity.TransactionItem, error)
 }

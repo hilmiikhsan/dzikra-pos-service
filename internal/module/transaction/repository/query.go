@@ -65,9 +65,12 @@ const (
 			tax_amount,
 			created_at
 		FROM transactions
-		WHERE name    ILIKE '%' || ? || '%'
-			OR email   ILIKE '%' || ? || '%'
-			OR phone_number ILIKE '%' || ? || '%'
+		WHERE status IN (?, ?)
+			AND (
+				name ILIKE '%' || ? || '%'
+				OR email ILIKE '%' || ? || '%'
+				OR phone_number ILIKE '%' || ? || '%'
+			)
 		ORDER BY created_at DESC
 		LIMIT ? OFFSET ?
 	`
@@ -75,9 +78,12 @@ const (
 	queryCountFindListTransaction = `
 		SELECT COUNT(*) 
 		FROM transactions
-		WHERE name ILIKE '%' || ? || '%'
-		OR email ILIKE '%' || ? || '%'
-		OR phone_number ILIKE '%' || ? || '%'
+		WHERE status IN (?, ?)
+		AND (
+			name ILIKE '%' || ? || '%'
+			OR email ILIKE '%' || ? || '%'
+			OR phone_number ILIKE '%' || ? || '%'
+		)
 	`
 
 	queryFindTransactionWithItemsByID = `
@@ -120,5 +126,39 @@ const (
 		FROM transaction_items
 		WHERE transaction_id = ?
 		ORDER BY id
+	`
+
+	queryFindTransactionByVPaymentID = `
+		SELECT
+			id, 
+			transaction_id, 
+			product_id, 
+			quantity, 
+			total_amount,
+			product_name, 
+			product_price, 
+			product_capital_price,
+			total_amount_capital_price
+		FROM transactions
+		WHERE v_payment_id = ? AND deleted_at IS NULL
+	`
+
+	queryUpdateTransactionStatus = `
+		UPDATE transactions 
+		SET 
+			status = ?, 
+			updated_at = NOW()
+		WHERE id = ?
+		RETURNING id, status, phone_number, name, email
+	`
+
+	queryDuplicateToTransactionHistory = `
+		INSERT INTO transaction_history
+		SELECT * FROM transactions WHERE id = ?
+	`
+
+	queryDuplicateToTransactionItemsHistory = `
+		INSERT INTO transaction_item_history
+		SELECT * FROM transaction_items WHERE transaction_id = ?
 	`
 )

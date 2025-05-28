@@ -14,10 +14,14 @@ type TransactionRepository interface {
 	UpdateTransactionByID(ctx context.Context, tx *sqlx.Tx, data *entity.Transaction) error
 	FindListTransaction(ctx context.Context, limit, offset int, search string) ([]dto.GetListTransaction, int, error)
 	FindTransactionWithItemsByID(ctx context.Context, id string) (*entity.Transaction, error)
+	FindTransactionByVPaymentID(ctx context.Context, vpaymentID string) (*entity.Transaction, error)
+	UpdateTransactionStatus(ctx context.Context, tx *sqlx.Tx, id, status string) (*entity.Transaction, error)
+	DuplicateToTransactionHistory(ctx context.Context, tx *sqlx.Tx, data *entity.Transaction) error
 }
 
 type TransactionService interface {
 	CreateTransaction(ctx context.Context, req *dto.CreateTransactionRequest, tableNumber int) (*dto.CreateTransactionResponse, error)
 	GetListTransaction(ctx context.Context, page, limit int, search string) (*dto.GetListTransactionResponse, error)
 	GetTransactionDetail(ctx context.Context, id string) (*dto.GetTransactionDetailResponse, error)
+	CallbackPayment(ctx context.Context, req *dto.PaymentCallbackRequest) error
 }

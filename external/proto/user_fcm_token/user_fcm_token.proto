@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package user_fcm_token;
+
+option go_package = "./user_fcm_token";
+
+service UserFcmToken {
+  rpc GetUserFcmTokenByUserID (GetUserFcmTokenByUserIDRequest) 
+      returns (GetUserFcmTokenByUserIDResponse);
+}
+
+message GetUserFcmTokenByUserIDRequest {
+  string user_id = 1;
+}
+
+message GetUserFcmTokenByUserIDResponse {
+  string message = 1;
+  string user_fcm_token = 2;
+  string full_name = 3;
+  string user_id = 4;
+  string email = 5;
+}
