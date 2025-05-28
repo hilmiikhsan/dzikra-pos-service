@@ -67,4 +67,10 @@ const (
 		SET deleted_at = NOW()
 		WHERE id = ? AND deleted_at IS NULL
 	`
+
+	querySumTotalCostExpenses = `
+		SELECT COALESCE(SUM(cost),0) 
+		FROM expenses 
+		WHERE created_at BETWEEN $1 AND $2
+	`
 )

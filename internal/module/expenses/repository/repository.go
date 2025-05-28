@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"time"
 
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/constants"
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/expenses/dto"
@@ -146,4 +147,16 @@ func (r *expensesRepository) SoftDeleteExpensesByID(ctx context.Context, tx *sql
 	}
 
 	return nil
+}
+
+func (r *expensesRepository) SumTotalCostExpenses(ctx context.Context, startDate, endDate time.Time) (int, error) {
+	var sum int
+
+	err := r.db.GetContext(ctx, &sum, r.db.Rebind(querySumTotalCostExpenses), startDate, endDate)
+	if err != nil {
+		log.Error().Err(err).Any("payload", startDate).Any("payload", endDate).Msg("repository::SumTotalCostExpenses - Failed to sum total amount expenses")
+		return 0, err
+	}
+
+	return sum, err
 }

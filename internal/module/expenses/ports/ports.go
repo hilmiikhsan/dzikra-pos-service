@@ -2,6 +2,7 @@ package ports
 
 import (
 	"context"
+	"time"
 
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/expenses/dto"
 	"github.com/Digitalkeun-Creative/be-dzikra-pos-service/internal/module/expenses/entity"
@@ -14,6 +15,7 @@ type ExpensesRepository interface {
 	FindExpensesByID(ctx context.Context, id int) (*entity.Expenses, error)
 	UpdateExpenses(ctx context.Context, tx *sqlx.Tx, data *entity.Expenses) (*entity.Expenses, error)
 	SoftDeleteExpensesByID(ctx context.Context, tx *sqlx.Tx, id int) error
+	SumTotalCostExpenses(ctx context.Context, startDate, endDate time.Time) (int, error)
 }
 
 type ExpensesService interface {
